@@ -38,25 +38,43 @@ namespace TestApi
         public void B_getMetadataTest(){
 
             JsonObject json = new JsonObject();
-            json.Add("path","/testing.txt");
+            json.Add("path","/text.txt");
 
             new RestAssured()
                 .Given()
-                .Header("Authorization", "Bearer " + ACCESS_TOKEN)
-                .Header("Content-Type", "application/json")
-                .Body(json.ToString())
+                    .Header("Authorization", "Bearer " + ACCESS_TOKEN)
+                    .Header("Content-Type", "application/json")
+                    .Body(json.ToString())
                 .When()
-                .Post("https://api.dropboxapi.com/2/files/get_metadata")
+                    .Post("https://api.dropboxapi.com/2/files/get_metadata")
                 .Then()
-                .TestStatus("test a", x => x == (int) HttpStatusCode.OK)
-                .Assert("test a");
+                    .TestStatus("test a", x => x == (int) HttpStatusCode.OK)
+                    .Assert("test a");
         }
 
         [Test]
         public void C_deleteTest(){
 
+            JsonObject jsonUpload = new JsonObject();
+            jsonUpload.Add("mode","add");
+            jsonUpload.Add("autorename", true);
+            jsonUpload.Add("path","/fileToDelete.txt");
+            
+            JsonObject jsonFile = new JsonObject();
+            jsonFile.Add("message","Hello");
+
+            new RestAssured()
+                .Given()
+                    .Header("Dropbox-API-Arg", jsonUpload.ToString())
+                    .Header("Content-Type", "application/octet-stream")
+                    .Header("Authorization", "Bearer " + ACCESS_TOKEN)
+                    .Body(jsonFile.ToString())
+                .When()
+                    .Post("https://content.dropboxapi.com/2/files/upload");
+            
+            
             JsonObject json = new JsonObject();
-            json.Add("path","/testing.txt");
+            json.Add("path","/fileToDelete.txt");
 
             new RestAssured()
                 .Given()
